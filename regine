@@ -1,0 +1,128 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace OttoRegine
+{
+    public class OttoRegine
+    {
+        public static void Main(string[] args)
+        {
+            int[,] scacchiera =
+            {
+                { 0, 0, 0, 0, 0, 0, 0, 0,},
+                { 0, 0, 0, 0, 0, 0, 0, 0,},
+                { 0, 0, 0, 0, 0, 0, 0, 0,},
+                { 0, 0, 0, 0, 0, 0, 0, 0,},
+                { 0, 0, 0, 0, 0, 0, 0, 0,},
+                { 0, 0, 0, 0, 0, 0, 0, 0,},
+                { 0, 0, 0, 0, 0, 0, 0, 0,},
+                { 0, 0, 0, 0, 0, 0, 0, 0,},
+            };
+
+            Risultato(scacchiera, 0); 
+            // ultimo passaggio, lo vediamo alla fine
+        }
+
+        // creo una funzione che controlli se la casella è in una posizione in cui può essere mangiata
+        public static bool Piazzabile(int[,] scacchiera, int x, int y)
+        {
+            // controllo orizzontale
+            for (int i = 0; i < 8; i++)
+            {
+                if (scacchiera[x, i] == 1)
+                {
+                    return false;
+                }
+            }
+            
+            // controllo diagonale
+            for (int i = 1; i <= 7; i++)
+            {
+                if (y - i >= 0 && x - i >= 0) // verifichiamo che esisti una casella in questa direzione
+                {
+                    if (scacchiera[x - i, y - i] == 1) // alto a sinistra
+                    {
+                        return false;
+                    }
+                }
+                if (y - i >= 0 && x + i <= 7) // verifichiamo che esisti una casella in questa direzione
+                {
+                    if (scacchiera[x + i, y - i] == 1) // basso a sinistra
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        // creo la funzione che trascrive la scacchiera
+        public static void ScriviScacchiera(int[,] scacchiera)
+        {
+            for (int y = 0; y <= 7; y++)
+            {
+                for (int x = 0; x <= 7; x++)
+                {
+                    Console.Write(scacchiera[y, x] + " ");
+                }
+                Console.WriteLine();
+            }
+        }
+
+        // questa funzione trasforma la posizione delle regine in un 1 e le posizioni libere in 0
+        public static bool Risolutore(int[,] scacchiera, int y)
+        {
+            // y è la colonna in cui si prova a posizionare la regina, diventa 8 solo quando sono state riempite tutte le colonne
+            if (y == 8)
+            {
+                return true;
+            }
+            for (int i = 0; i < 8; i++)
+            {
+                if (Piazzabile(scacchiera, i, y) == true) // per ogni casella nella colonna verifica che vi si possa posizionare una regina
+                {
+                    scacchiera[i, y] = 1; // ricordiamo che libero = 0, regina = 1
+
+                    if (Risolutore(scacchiera, y + 1) == true) 
+                    {
+                        return true; // la y aumenta, perciò si passa alla colonna successiva
+                    }
+                    scacchiera[i, y] = 0; // qui si verifica il backtracking, la funzione torna indetro e rieffettua i controlli
+                }
+            }
+            return false;                 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        }
+
+        // questa funzione mette insieme la funzione che trova configurazione della scacchiera esatta con la funzione che trascrive la scacchiera
+        public static void Risultato(int[,] scacchiera, int y)
+        {
+            if (Risolutore(scacchiera, y) == true)
+            {
+                ScriviScacchiera(scacchiera);
+            }
+            else
+            {
+                Console.WriteLine("Non esistono risultati con questa configurazione"); // in caso qualcosa andasse storto
+            }
+        }
+
+
+        /* 
+         * OUTPUT:
+         * 
+         * 1 0 0 0 0 0 0 0
+         * 0 0 0 0 0 0 1 0
+         * 0 0 0 0 1 0 0 0
+         * 0 0 0 0 0 0 0 1
+         * 0 1 0 0 0 0 0 0
+         * 0 0 0 1 0 0 0 0
+         * 0 0 0 0 0 1 0 0
+         * 0 0 1 0 0 0 0 0
+         * 
+        */
+    }
+}
+
